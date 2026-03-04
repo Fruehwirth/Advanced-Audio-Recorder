@@ -1,0 +1,9 @@
+{
+  "id": "advanced-audio-recorder",
+  "name": "Advanced Audio Recorder",
+  "version": "0.2.8",
+  "minAppVersion": "1.0.3",
+  "description": "Record audio with live waveform visualization, custom playback UI, and optional encryption compatible with Advanced File Encrypter.",
+  "author": "fruehwirth",
+  "isDesktopOnly": true
+}
