@@ -1,0 +1,404 @@
+/* === Audio File View (opened directly in a tab) === */
+.aar-file-view-wrap {
+	max-width: 560px;
+	margin: 48px auto;
+	padding: 0 16px;
+}
+
+/* === Recording Code Block === */
+.aar-recording-block {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px 16px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.aar-recording-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: var(--font-ui-small);
+	color: var(--text-muted);
+}
+
+.aar-recording-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #e53935;
+	animation: aar-pulse 1.2s ease-in-out infinite;
+}
+
+.aar-recording-dot--paused {
+	animation: none;
+	opacity: 0.4;
+}
+
+@keyframes aar-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.3; }
+}
+
+/* === Recording block button row === */
+.aar-recording-btn-row {
+	display: flex;
+	gap: 8px;
+}
+
+.aar-recording-btn {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 12px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	cursor: pointer;
+}
+
+.aar-recording-btn .svg-icon {
+	width: 13px;
+	height: 13px;
+}
+
+.aar-recording-btn:hover {
+	background: var(--background-modifier-hover);
+}
+
+.aar-recording-btn--stop {
+	color: #e53935;
+	border-color: #e5393540;
+}
+
+.aar-recording-btn--stop:hover {
+	background: #e5393512;
+}
+
+.aar-recording-duration {
+	font-variant-numeric: tabular-nums;
+}
+
+.aar-waveform-canvas {
+	width: 100%;
+	height: 64px;
+	display: block;
+	border-radius: 4px;
+}
+
+/* === Status Bar === */
+.aar-status-bar {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+}
+
+.aar-status-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: #e53935;
+	animation: aar-pulse 1.2s ease-in-out infinite;
+}
+
+.aar-status-text {
+	font-variant-numeric: tabular-nums;
+}
+
+/* === Status Bar Popup === */
+.aar-popup {
+	position: fixed;
+	bottom: 36px;
+	right: 12px;
+	width: 280px;
+	padding: 12px;
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 8px;
+	box-shadow: var(--shadow-s);
+	z-index: var(--layer-popover);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.aar-popup-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.aar-popup-title {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-semibold);
+	color: var(--text-normal);
+}
+
+.aar-popup-duration {
+	font-variant-numeric: tabular-nums;
+	font-size: var(--font-ui-small);
+	color: var(--text-muted);
+}
+
+.aar-popup-waveform {
+	width: 100%;
+	height: 48px;
+	display: block;
+	border-radius: 4px;
+}
+
+.aar-popup-btn-row {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+}
+
+.aar-popup-btn {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 5px 14px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	cursor: pointer;
+}
+
+.aar-popup-btn .svg-icon {
+	width: 13px;
+	height: 13px;
+}
+
+.aar-popup-btn:hover {
+	background: var(--background-modifier-hover);
+}
+
+.aar-popup-btn--stop {
+	color: #e53935;
+	border-color: #e5393540;
+}
+
+.aar-popup-btn--stop:hover {
+	background: #e5393512;
+}
+
+/* === Playback Embed — root container reset === */
+/* Strips Obsidian's internal-embed box so only our .aar-playback shows */
+.internal-embed.aar-embed-root {
+	display: block;
+	border: none !important;
+	background: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	box-shadow: none !important;
+}
+
+/* Belt-and-suspenders: hide any native audio that slips through */
+.internal-embed.aar-embed-root audio {
+	display: none !important;
+}
+
+/* === Playback Embed === */
+.aar-playback {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 12px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.aar-play-btn {
+	flex-shrink: 0;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: none;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+.aar-play-btn:hover {
+	background: var(--interactive-accent-hover);
+}
+
+.aar-play-btn .svg-icon {
+	width: 14px;
+	height: 14px;
+}
+
+.aar-playback-waveform-wrap {
+	flex: 1;
+	min-width: 0;
+	cursor: pointer;
+	user-select: none;
+}
+
+.aar-playback-waveform {
+	width: 100%;
+	height: 48px;
+	display: block;
+}
+
+/* Right column: time on top, volume below */
+.aar-playback-right {
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+}
+
+.aar-playback-duration {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: var(--font-ui-smaller);
+	font-variant-numeric: tabular-nums;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+
+/* === Volume control === */
+.aar-volume {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.aar-volume-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-muted);
+	cursor: pointer;
+	line-height: 0;
+}
+
+.aar-volume-btn:hover {
+	color: var(--text-normal);
+}
+
+.aar-volume-btn .svg-icon {
+	width: 13px;
+	height: 13px;
+}
+
+.aar-volume-slider {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 64px;
+	height: 3px;
+	border-radius: 2px;
+	background: var(--background-modifier-border);
+	outline: none;
+	cursor: pointer;
+}
+
+.aar-volume-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--interactive-accent);
+	cursor: pointer;
+}
+
+.aar-volume-slider::-moz-range-thumb {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--interactive-accent);
+	cursor: pointer;
+	border: none;
+}
+
+/* === Convert to unencrypted button === */
+.aar-convert-btn {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	color: var(--text-muted);
+	line-height: 0;
+}
+
+.aar-convert-btn:hover {
+	color: var(--text-normal);
+}
+
+.aar-convert-btn .svg-icon {
+	width: 14px;
+	height: 14px;
+}
+
+/* === Password Modal === */
+.aar-password-modal .modal-content {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.aar-password-input-wrap {
+	position: relative;
+}
+
+.aar-password-input-wrap input {
+	width: 100%;
+}
+
+/* === Locked audio inline prompt === */
+.aar-locked-prompt {
+	flex-direction: column;
+	gap: 8px;
+	padding: 10px 14px;
+}
+
+.aar-locked-prompt-header {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: var(--font-ui-small);
+	color: var(--text-muted);
+}
+
+.aar-locked-prompt-header .svg-icon {
+	width: 13px;
+	height: 13px;
+}
+
+.aar-locked-prompt-input {
+	display: flex;
+	gap: 8px;
+}
+
+.aar-locked-prompt-input input {
+	flex: 1;
+}
+
+@keyframes aar-shake {
+	0%, 100% { transform: translateX(0); }
+	25% { transform: translateX(-4px); }
+	75% { transform: translateX(4px); }
+}
+
+.aar-input-error {
+	animation: aar-shake 0.3s ease;
+	border-color: #e53935 !important;
+}

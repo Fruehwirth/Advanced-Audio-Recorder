@@ -1,0 +1,19 @@
+{
+  "name": "advanced-audio-recorder",
+  "version": "0.2.8",
+  "description": "Advanced audio recorder plugin for Obsidian with live waveform visualization and optional encryption",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production"
+  },
+  "keywords": [],
+  "author": "fruehwirth",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "esbuild": "^0.20.0",
+    "obsidian": "latest",
+    "typescript": "^5.3.3"
+  }
+}
