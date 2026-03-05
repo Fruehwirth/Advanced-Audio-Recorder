@@ -294,17 +294,6 @@
 	font-size: 10px;
 }
 
-.is-mobile .aar-playback-waveform {
-	height: 24px;
-}
-
-.is-mobile .aar-waveform-canvas {
-	height: 32px;
-}
-
-.is-mobile .aar-popup-waveform {
-	height: 24px;
-}
 
 .aar-volume {
 	display: flex;

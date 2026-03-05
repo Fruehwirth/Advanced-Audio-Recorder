@@ -8,13 +8,15 @@ export class WaveformRenderer {
 	private canvas: HTMLCanvasElement;
 	private ctx: CanvasRenderingContext2D;
 	private dpr: number;
+	private ampScale: number;
 	private lastPushCount = 0;
 	private lastPushTime = 0;
 
-	constructor(canvas: HTMLCanvasElement) {
+	constructor(canvas: HTMLCanvasElement, amplitudeScale = 1) {
 		this.canvas = canvas;
 		this.ctx = canvas.getContext("2d")!;
 		this.dpr = window.devicePixelRatio || 1;
+		this.ampScale = amplitudeScale;
 		this.resize();
 	}
 
@@ -75,7 +77,7 @@ export class WaveformRenderer {
 			if (x + barWidth < 0) break;  // rest are further left, stop early
 
 			const amp = samples[i];
-			const barHeight = Math.max(minBarHeight, amp * (h - 4));
+			const barHeight = Math.max(minBarHeight, amp * (h - 4) * this.ampScale);
 			const y = centerY - barHeight / 2;
 
 			ctx.beginPath();
@@ -111,7 +113,7 @@ export class WaveformRenderer {
 		for (let i = 0; i < barCount; i++) {
 			const sampleIdx = Math.floor((i / barCount) * samples.length);
 			const amp = sampleIdx < samples.length ? samples[sampleIdx] : 0;
-			const barHeight = Math.max(minBarHeight, amp * (h - 4));
+			const barHeight = Math.max(minBarHeight, amp * (h - 4) * this.ampScale);
 			const x = i * step;
 			const y = centerY - barHeight / 2;
 

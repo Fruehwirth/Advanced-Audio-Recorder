@@ -101,7 +101,7 @@ export class RecordingPanelView extends ItemView {
 		// Waveform — grows to fill remaining space
 		const canvas = wrap.createEl("canvas", { cls: "aar-panel-waveform" });
 		requestAnimationFrame(() => {
-			this.renderer = new WaveformRenderer(canvas);
+			this.renderer = new WaveformRenderer(canvas, 0.5);
 			if (!isPaused) {
 				this.startAnimation();
 			} else {

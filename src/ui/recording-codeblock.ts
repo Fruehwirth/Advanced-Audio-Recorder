@@ -1,4 +1,4 @@
-import { MarkdownRenderChild, setIcon } from "obsidian";
+import { MarkdownRenderChild, Platform, setIcon } from "obsidian";
 import type AdvancedAudioRecorderPlugin from "../main";
 import { CODEBLOCK_TYPE } from "../types";
 import { WaveformRenderer } from "./waveform-renderer";
@@ -82,7 +82,7 @@ class RecordingBlockWidget extends MarkdownRenderChild {
 		if (state === "paused") this.applyPausedState();
 
 		requestAnimationFrame(() => {
-			this.renderer = new WaveformRenderer(canvas);
+			this.renderer = new WaveformRenderer(canvas, Platform.isMobile ? 0.5 : 1);
 			if (this.plugin.recorder?.state === "recording") {
 				this.startAnimation();
 			} else {

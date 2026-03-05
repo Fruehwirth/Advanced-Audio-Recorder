@@ -1,4 +1,4 @@
-import { MarkdownRenderChild, Notice, TFile, setIcon } from "obsidian";
+import { MarkdownRenderChild, Notice, Platform, TFile, setIcon } from "obsidian";
 import type AdvancedAudioRecorderPlugin from "../main";
 import { LOCKED_AUDIO_EXTENSION } from "../types";
 import { WaveformRenderer } from "./waveform-renderer";
@@ -149,7 +149,7 @@ export class PlaybackEmbedWidget extends MarkdownRenderChild {
 
 		// ── Waveform: show placeholder immediately, decode in background ──
 		requestAnimationFrame(() => {
-			this.renderer = new WaveformRenderer(canvas);
+			this.renderer = new WaveformRenderer(canvas, Platform.isMobile ? 0.5 : 1);
 			this.waveformData = new Float32Array(200).fill(0.15);
 			this.drawWaveform();
 
