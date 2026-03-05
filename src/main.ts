@@ -1,9 +1,10 @@
-import { Plugin, Notice, MarkdownView } from "obsidian";
+import { Plugin, Notice, MarkdownView, Platform, setIcon } from "obsidian";
 import { AARSettings, DEFAULT_SETTINGS, CODEBLOCK_TYPE, LOCKED_AUDIO_EXTENSION } from "./types";
 import { AARSettingTab } from "./settings";
 import { AudioRecorder } from "./recorder/audio-recorder";
 import { WaveformBuffer } from "./recorder/waveform-analyzer";
 import { StatusBarWidget } from "./ui/status-bar-widget";
+import { RecordingPanelView, RECORDING_PANEL_VIEW_TYPE } from "./ui/recording-panel-view";
 import { registerRecordingCodeBlock } from "./ui/recording-codeblock";
 import { registerPlaybackEmbed } from "./ui/playback-embed";
 import { AudioEncryptor } from "./encryption/audio-encryptor";
@@ -15,6 +16,8 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 	waveformBuffer: WaveformBuffer = new WaveformBuffer();
 	statusBarWidget: StatusBarWidget | null = null;
 	encryptor: AudioEncryptor | null = null;
+
+	private ribbonIconEl: HTMLElement | null = null;
 
 	/** File path where the recording code block was inserted */
 	private recordingSourceFile: string | null = null;
@@ -30,7 +33,21 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 
 		this.encryptor = new AudioEncryptor(this.app);
 
-		this.addRibbonIcon("mic", "Record audio", () => this.toggleRecording());
+		// Register the sidebar recording panel
+		this.registerView(
+			RECORDING_PANEL_VIEW_TYPE,
+			(leaf) => new RecordingPanelView(leaf, this)
+		);
+
+		// Desktop: ribbon toggles recording directly (original behaviour)
+		// Mobile: ribbon opens the sidebar recording panel
+		this.ribbonIconEl = this.addRibbonIcon("mic", "Record audio", () => {
+			if (Platform.isMobile) {
+				this.openRecordingPanel();
+			} else {
+				this.toggleRecording();
+			}
+		});
 
 		this.addCommand({
 			id: "toggle-recording",
@@ -51,6 +68,12 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 			id: "pause-resume-recording",
 			name: "Pause / resume recording",
 			callback: () => this.togglePause(),
+		});
+
+		this.addCommand({
+			id: "open-recording-panel",
+			name: "Open recording panel",
+			callback: () => this.openRecordingPanel(),
 		});
 
 		registerRecordingCodeBlock(this);
@@ -89,6 +112,27 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
+	// ─── Recording panel ─────────────────────────────────────────────────────
+
+	async openRecordingPanel() {
+		const { workspace } = this.app;
+		const existing = workspace.getLeavesOfType(RECORDING_PANEL_VIEW_TYPE);
+		if (existing.length > 0) {
+			workspace.revealLeaf(existing[0]);
+			return;
+		}
+		const leaf = workspace.getRightLeaf(false);
+		await leaf?.setViewState({ type: RECORDING_PANEL_VIEW_TYPE, active: true });
+		if (leaf) workspace.revealLeaf(leaf);
+	}
+
+	private getRecordingPanel(): RecordingPanelView | null {
+		const leaves = this.app.workspace.getLeavesOfType(RECORDING_PANEL_VIEW_TYPE);
+		return leaves.length > 0 ? (leaves[0].view as RecordingPanelView) : null;
+	}
+
+	// ─── Recording lifecycle ─────────────────────────────────────────────────
+
 	async toggleRecording() {
 		const s = this.recorder?.state;
 		if (s === "recording" || s === "paused") {
@@ -103,9 +147,11 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 		if (this.recorder.state === "recording") {
 			this.recorder.pause();
 			this.statusBarWidget?.updateState("paused");
+			if (Platform.isMobile) this.getRecordingPanel()?.setPanelState("paused");
 		} else if (this.recorder.state === "paused") {
 			this.recorder.resume();
 			this.statusBarWidget?.updateState("recording");
+			if (Platform.isMobile) this.getRecordingPanel()?.setPanelState("recording");
 		}
 	}
 
@@ -126,16 +172,25 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 
 			this.recorder.on("duration", (seconds: number) => {
 				this.statusBarWidget?.updateDuration(seconds);
+				if (Platform.isMobile) this.getRecordingPanel()?.updateDuration(seconds);
 			});
 
 			this.recorder.on("error", (error: Error) => {
 				new Notice(`Recording error: ${error.message}`);
 				this.statusBarWidget?.hide();
+				if (Platform.isMobile) {
+					this.getRecordingPanel()?.setPanelState("idle");
+					if (this.ribbonIconEl) setIcon(this.ribbonIconEl, "mic");
+				}
 			});
 
 			await this.recorder.start();
 
 			this.statusBarWidget?.show();
+			if (Platform.isMobile) {
+				this.getRecordingPanel()?.setPanelState("recording");
+				if (this.ribbonIconEl) setIcon(this.ribbonIconEl, "square");
+			}
 			this.insertRecordingCodeBlock();
 
 			new Notice("Recording started");
@@ -149,6 +204,9 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 		const s = this.recorder?.state;
 		if (!this.recorder || (s !== "recording" && s !== "paused")) return;
 
+		// Track before clearing, so we know if an auto-embed happened
+		const hadCodeBlock = !!this.recordingSourceFile;
+
 		try {
 			const blob = await this.recorder.stop();
 			this.statusBarWidget?.hide();
@@ -156,9 +214,19 @@ export default class AdvancedAudioRecorderPlugin extends Plugin {
 			const filePath = await this.saveRecording(blob);
 			this.replaceRecordingCodeBlock(filePath);
 
+			if (Platform.isMobile) {
+				// Show embed button only when the code block wasn't auto-inserted
+				this.getRecordingPanel()?.setPanelState("saved", filePath, !hadCodeBlock);
+				if (this.ribbonIconEl) setIcon(this.ribbonIconEl, "mic");
+			}
+
 			new Notice("Recording saved");
 		} catch (e) {
 			new Notice(`Failed to save recording: ${(e as Error).message}`);
+			if (Platform.isMobile) {
+				this.getRecordingPanel()?.setPanelState("idle");
+				if (this.ribbonIconEl) setIcon(this.ribbonIconEl, "mic");
+			}
 		} finally {
 			this.recorder = null;
 			this.recordingId = null;

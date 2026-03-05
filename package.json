@@ -1,6 +1,6 @@
 {
   "name": "advanced-audio-recorder",
-  "version": "0.2.8",
+  "version": "0.3.0",
   "description": "Advanced audio recorder plugin for Obsidian with live waveform visualization and optional encryption",
   "main": "main.js",
   "scripts": {

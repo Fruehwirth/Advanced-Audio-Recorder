@@ -276,6 +276,36 @@
 }
 
 /* === Volume control === */
+.is-mobile .aar-volume {
+	display: none;
+}
+
+.is-mobile .aar-play-btn {
+	width: 42px;
+	height: 42px;
+}
+
+.is-mobile .aar-play-btn .svg-icon {
+	width: 18px;
+	height: 18px;
+}
+
+.is-mobile .aar-playback-duration {
+	font-size: 10px;
+}
+
+.is-mobile .aar-playback-waveform {
+	height: 24px;
+}
+
+.is-mobile .aar-waveform-canvas {
+	height: 32px;
+}
+
+.is-mobile .aar-popup-waveform {
+	height: 24px;
+}
+
 .aar-volume {
 	display: flex;
 	align-items: center;
@@ -386,10 +416,286 @@
 .aar-locked-prompt-input {
 	display: flex;
 	gap: 8px;
+	max-width: 280px;
 }
 
 .aar-locked-prompt-input input {
 	flex: 1;
+	min-width: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Recording Sidebar Panel
+   ═══════════════════════════════════════════════════════════════ */
+
+.aar-panel {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 24px 20px;
+	box-sizing: border-box;
+}
+
+/* ── Idle ────────────────────────────────────────────────────── */
+
+.aar-panel-idle {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+}
+
+/* Outer pulsing halo */
+.aar-record-ring {
+	width: 108px;
+	height: 108px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: aar-halo 2.4s ease-in-out infinite;
+}
+
+@keyframes aar-halo {
+	0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.22); }
+	50%       { box-shadow: 0 0 0 14px rgba(229, 57, 53, 0); }
+}
+
+/* Inner record button */
+.aar-record-btn {
+	width: 84px;
+	height: 84px;
+	border-radius: 50%;
+	border: none;
+	background: #e53935;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 6px 24px rgba(229, 57, 53, 0.38);
+	transition: transform 0.12s ease, box-shadow 0.12s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.aar-record-btn .svg-icon {
+	width: 30px;
+	height: 30px;
+}
+
+.aar-record-btn:active {
+	transform: scale(0.92);
+	box-shadow: 0 2px 10px rgba(229, 57, 53, 0.25);
+}
+
+.aar-record-hint {
+	font-size: var(--font-ui-small);
+	color: var(--text-faint);
+	letter-spacing: 0.02em;
+}
+
+/* ── Recording / Paused ──────────────────────────────────────── */
+
+.aar-panel-recording-wrap {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+/* Status row */
+.aar-panel-rec-status {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* Animated dot */
+.aar-panel-rec-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #e53935;
+	flex-shrink: 0;
+	animation: aar-pulse 1.2s ease-in-out infinite;
+}
+
+.aar-panel-rec-dot--paused {
+	animation: none;
+	opacity: 0.35;
+}
+
+/* REC / PAUSED badge */
+.aar-panel-rec-tag {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: #e53935;
+	padding: 2px 6px;
+	border-radius: 4px;
+	background: rgba(229, 57, 53, 0.1);
+}
+
+.aar-panel-rec-dot--paused ~ .aar-panel-rec-tag {
+	color: var(--text-muted);
+	background: var(--background-modifier-border);
+}
+
+/* Timer — large tabular clock */
+.aar-panel-timer {
+	margin-left: auto;
+	font-size: 28px;
+	font-weight: 300;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+	color: var(--text-normal);
+}
+
+/* Waveform */
+.aar-panel-waveform {
+	flex: 1;
+	width: 100%;
+	min-height: 80px;
+	display: block;
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
+
+/* Control buttons */
+.aar-panel-ctrl-row {
+	display: flex;
+	gap: 10px;
+}
+
+.aar-ctrl-btn {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	padding: 15px 10px;
+	border-radius: 14px;
+	border: none;
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-semibold);
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	transition: opacity 0.1s ease;
+}
+
+.aar-ctrl-btn .svg-icon {
+	width: 16px;
+	height: 16px;
+}
+
+.aar-ctrl-btn:active {
+	opacity: 0.72;
+}
+
+.aar-ctrl-btn--pause {
+	background: var(--background-modifier-border);
+	color: var(--text-normal);
+}
+
+.aar-ctrl-btn--stop {
+	background: #e53935;
+	color: #fff;
+}
+
+/* ── Saved ───────────────────────────────────────────────────── */
+
+.aar-panel-saved {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.aar-saved-success {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.aar-saved-icon {
+	display: flex;
+	align-items: center;
+	color: var(--color-green, #43a047);
+}
+
+.aar-saved-icon .svg-icon {
+	width: 22px;
+	height: 22px;
+}
+
+.aar-saved-title {
+	font-size: var(--font-ui-medium);
+	font-weight: var(--font-semibold);
+	color: var(--text-normal);
+}
+
+.aar-saved-chip {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 6px;
+	padding: 6px 10px;
+	word-break: break-all;
+}
+
+.aar-saved-embed-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 16px 12px;
+	border-radius: 14px;
+	border: none;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-size: var(--font-ui-small);
+	font-weight: var(--font-semibold);
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	transition: opacity 0.1s ease;
+}
+
+.aar-saved-embed-btn .svg-icon {
+	width: 16px;
+	height: 16px;
+}
+
+.aar-saved-embed-btn:active {
+	opacity: 0.8;
+}
+
+/* Push "Record again" to the bottom */
+.aar-saved-new-btn {
+	margin-top: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	padding: 12px;
+	border-radius: 12px;
+	border: 1px solid var(--background-modifier-border);
+	background: transparent;
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.aar-saved-new-btn .svg-icon {
+	width: 13px;
+	height: 13px;
+}
+
+.aar-saved-new-btn:active {
+	background: var(--background-modifier-hover);
 }
 
 @keyframes aar-shake {

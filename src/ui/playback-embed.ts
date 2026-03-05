@@ -82,6 +82,9 @@ export class PlaybackEmbedWidget extends MarkdownRenderChild {
 
 	onunload() {
 		this.stopAnimation();
+		// Remove the guard class so the post-processor can re-initialise this
+		// element if Obsidian reuses the same DOM node on the next render.
+		this.containerEl.removeClass("aar-embed-root");
 		if (this.audio) {
 			this.audio.pause();
 			this.audio = null;
@@ -151,6 +154,9 @@ export class PlaybackEmbedWidget extends MarkdownRenderChild {
 			this.drawWaveform();
 
 			this.generateWaveform(blob).then(() => {
+				// Re-measure the canvas — it may have had zero dimensions on the
+				// first rAF if the embed wasn't fully laid out yet.
+				this.renderer?.resize();
 				this.drawWaveform();
 				if (this.decodedDuration && this.timeEl) {
 					const cur = this.audio?.currentTime ?? 0;
